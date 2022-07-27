@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const url  = 'mongodb://localhost/ecommerce'
+const url  = 'mongodb://localhost/ecommercev1'
 const app = express()
 
 

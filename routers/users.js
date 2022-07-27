@@ -1,45 +1,94 @@
-const express = require('express')
+const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router()
 const User = require('../models/users')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
-router.get('/', async(req, res)=>{
-    try{
-        console.log("here");
-        const users = await User.find()
-        
-        res.json(users)
-        // res.send("User get method");
 
-    }catch(err){
-        console.log(err);
-        res.send(err);
-    }
-})
+router.post('/register', async (req, res) => {
+    console.log("Here");
+    User.find({
+        username: req.body.username
+    }).exec()
+        .then(user => {
+            if (user.length >= 1) {
+                return res.status(409).json({
+                    message: "Username already exist!"
+                });
+            }
+            else {
+                bcrypt.hash(req.body.password, 10, (err, hash) => {
+                    if (err) {
+                        return res.status(500).json({
+                            error: err
+                        });
+                    }
+                    else {
+                        const user = new User({
+                            username: req.body.username,
+                            password: hash,
+                            seller: req.body.seller
+                        });
+                        user.save()
+                            .then(result => {
+                                res.status(200).json({
+                                    message: "User Created"
+                                });
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                res.status(500).json({
+                                    error: err
+                                });
+                            });
+                    }
 
-router.get('/:id', async(req,res)=>{
-    try{
-        const user = await User.findById(req.params.id)
-        // res.send(user)
-        res.json(user)
-    }catch(err){
-        console.log(err);
-    }
-})
-
-router.post('/', async(req, res) => {
-    const user = new User({
-        username: req.body.username,
-        password: req.body.password,
-        type_of_user: req.body.type_of_user
-    })
-    try{
-        const userSaved = await user.save()
-        res.send(userSaved)
-    }catch(err){
-        console.log("User post method", err);
-        res.send(err)
-    }
+                });
+            }
+        })
+        .catch();
 });
 
+router.post('/login', (req, res) => {
+    User.find({
+        username: req.body.username
+    })
+    .exec()
+    .then(user => {
+        if(user.length < 1){
+            return res.status(404).json({
+                message: "Authentication Failed!"
+            });
+        }
+
+        bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+            if(err || !result){
+                return res.status(404).json({
+                    message: "Authentication Failed!"
+                });
+            }
+            if(result){
+                const token = jwt.sign({
+                    username: user[0].username,
+                    userId: user[0]._id
+                }, process.env.JWT_KEY, {
+                    expiresIn: "1h"
+                })
+                return res.status(200).json({
+                    message: "Authentication Successfull",
+                    token: token
+                });
+            }
+        
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        });
+    });
+});
 
 module.exports = router

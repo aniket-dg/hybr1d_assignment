@@ -8,11 +8,13 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
-    type_of_user: {
-        type: String,
-        required: true
+    seller: {
+        // false: Buyer, true: Seller
+        type: Boolean,
+        default: false
     }
 })
 
@@ -22,5 +24,5 @@ module.exports = mongoose.model('User', userSchema)
 /*
 usename
 password
-types_of_user : buyer/seller
+seller
 */
