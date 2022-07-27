@@ -1,0 +1,27 @@
+{
+  "name": "hybr1d_assignment",
+  "version": "1.0.0",
+  "description": "Fun Assignment",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aniket-dg/hybr1d_assignment.git"
+  },
+  "author": "Aniket Gavali",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aniket-dg/hybr1d_assignment/issues"
+  },
+  "homepage": "https://github.com/aniket-dg/hybr1d_assignment#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "mongodb": "^4.8.1",
+    "mongoose": "^6.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
