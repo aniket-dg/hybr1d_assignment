@@ -5,8 +5,12 @@ const User = require('../models/users')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+router.get('/', async(req, res)=>{
+    const users =await User.find({}).exec()
+    res.json(users);
+});
 
-router.post('/register', async (req, res) => {
+router.post('/register', async(req, res) => {
     console.log("Here");
     User.find({
         username: req.body.username
