@@ -5,13 +5,18 @@ const User = require('../models/users')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+/* For Testing Purpose
 router.get('/', async(req, res)=>{
     const users =await User.find({}).exec()
     res.json(users);
 });
+*/
 
-router.post('/register', async(req, res) => {
-    console.log("Here");
+
+
+// Signup
+router.post('/register', async (req, res) => {
+    console.log(req.body);
     User.find({
         username: req.body.username
     }).exec()
@@ -51,48 +56,54 @@ router.post('/register', async(req, res) => {
                 });
             }
         })
-        .catch();
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        });
 });
 
+// Login 
 router.post('/login', (req, res) => {
     User.find({
         username: req.body.username
     })
-    .exec()
-    .then(user => {
-        if(user.length < 1){
-            return res.status(404).json({
-                message: "Authentication Failed!"
-            });
-        }
-
-        bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-            if(err || !result){
+        .exec()
+        .then(user => {
+            if (user.length < 1) {
                 return res.status(404).json({
                     message: "Authentication Failed!"
                 });
             }
-            if(result){
-                const token = jwt.sign({
-                    username: user[0].username,
-                    userId: user[0]._id
-                }, process.env.JWT_KEY, {
-                    expiresIn: "1h"
-                })
-                return res.status(200).json({
-                    message: "Authentication Successfull",
-                    token: token
-                });
-            }
-        
+
+            bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+                if (err || !result) {
+                    return res.status(404).json({
+                        message: "Authentication Failed!"
+                    });
+                }
+                if (result) {
+                    const token = jwt.sign({
+                        username: user[0].username,
+                        userId: user[0]._id
+                    }, process.env.JWT_KEY, {
+                        expiresIn: "1h"
+                    })
+                    return res.status(200).json({
+                        message: "Authentication Successfull",
+                        token: token
+                    });
+                }
+
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
         });
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
-        });
-    });
 });
 
 module.exports = router
