@@ -1,12 +1,20 @@
 # REST API for an e-commerce marketplace
 
-## Install
+## Clone the Project
+    
+    git clone https://github.com/aniket-dg/hybr1d_assignment.git
 
+## Install
+    cd hybr1d_assignment
     npm install
 
 ## Run the app
 
     nodemon run app.js
+
+## Server lisen on
+
+    http://localhost:9000/
 
 # REST API
 
